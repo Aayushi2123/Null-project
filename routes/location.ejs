@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function initAutocompleteSearch() {
+          geolocation();
+          // Create the search box and link it to the UI element.
+          const input = document.getElementById("pac-input");
+          const searchBox = new google.maps.places.SearchBox(input);
+      
+          // Listen for the event fired when the user selects a prediction and retrieve
+          // more details for that place.
+          searchBox.addListener("places_changed", () => {
+            const places = searchBox.getPlaces();
+      
+            if (places.length == 0) {
+              return;
+            }
+      
+            places.forEach((place) => {
+              // Create a marker for each place.
+              var coordinate = place.geometry.location;
+      
+              document.getElementById('pac-input-all').value = coordinate;
+      
+              var coordinate2 = document.getElementById('pac-input-all').value;
+              coordinate2 = coordinate2.replace("(", "");
+              coordinate2 = coordinate2.replace(")", "");
+              var coordinate2_split = coordinate2.split(", ");
+              var coordinate2_lat = coordinate2_split[0];
+              document.getElementById('pac-input-lat').value = coordinate2_lat;
+              var coordinate2_lng = coordinate2_split[1];
+              document.getElementById('pac-input-lng').value = coordinate2_lng;
+            });
+          });
+        }
+      </script>
+      
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDs6g69kVukSE4RefqGSwzdLRpBahTJKAo&callback=initAutocompleteSearch&libraries=places&v=weekly" async></script>
+      
+      
+      
+      <div class="row">
+        <div class="col-12">
+          <div class="kt-portlet kt-portlet--mobile">
+            <div class="kt-portlet__body">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <div style="height:600px; width:100%" id="map">
+                      <div align="center"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+        var lat_prov = 41.888145;
+        var lng_prov = 12.477555;
+      
+        var map;
+        var prev_infowindow = false; //CLOSE OTHER
+        var geocoder; //CENTER MAP
+        var nameArrCont; //CENTER MAP
+        var nameArr;
+      
+        function geolocation() {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(draw_map, draw_map);
+      
+          } else {
+      
+          }
+      
+        }
+      
+        function draw_map(position) {
+          if (position.code == "1" || position.code == "2") {
+            lat_prov = 41.888145;
+            lng_prov = 12.477555;
+          } else {
+            lat_prov = position.coords.latitude;
+            lng_prov = position.coords.longitude;
+          }
+          initMap();
+        }
+      
+        function initMap() {
+          map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 16,
+            minZoom: 8,
+            maxZoom: 19,
+            center: {
+              lat: lat_prov,
+              lng: lng_prov
+            },
+          });
+      
+          var get_lat = "";
+          var get_lng = "";
+          if (get_lat != "" && get_lng != "") {
+            var latLng = new google.maps.LatLng(get_lat, get_lng);
+            map.setCenter(latLng);
+          }
+        }
+      
+        
+      </script>
+      
+      <script>
+        function geocodeLatLng(geocoder) {
+          const input = document.getElementById("latlng").value;
+          const latlngStr = input.split(",", 2);
+          const latlng = {
+            lat: parseFloat(latlngStr[0]),
+            lng: parseFloat(latlngStr[1]),
+          };
+      
+          geocoder
+            .geocode({
+              location: latlng
+            })
+            .then((response) => {
+              if (response.results[0]) {
+                document.getElementById("address").value = response.results[0].formatted_address;
+                document.getElementById("submit").click();
+              } else {
+                //window.alert("No results found");
+              }
+            })
+            .catch((e) => window.alert("Geocoder failed due to: " + e));
+        }
+      </script>
+    
+</body>
+</html>
